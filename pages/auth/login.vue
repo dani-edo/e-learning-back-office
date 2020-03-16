@@ -1,55 +1,66 @@
 <template>
   <div class="full">
-    <div class="container">
-      <b-card title="Login" class="login-container">
-        <b-card-text>
-          <b-form @submit.prevent="onSubmit">
-            <b-form-group label="Email" label-for="input-1">
-              <b-form-input
-                v-model="form.email"
-                type="email"
-                required
-                placeholder="Enter email"
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group label="Password" label-for="password">
-              <b-input
-                id="password"
-                v-model="form.password"
-                type="password"
-                aria-describedby="password-help-block"
-                placeholder="Enter password"
-              ></b-input>
-            </b-form-group>
-            <b-form-invalid-feedback class="d-block">
-              {{ form.error }}
-            </b-form-invalid-feedback>
-            <b-button type="submit" variant="info" class="mt-3"
-              >Submit</b-button
-            >
-          </b-form>
-          <b-form-text class="mt-3">
-            Don't have an account?. Sign up
-            <nuxt-link to="/auth/register"> here</nuxt-link>.
-          </b-form-text>
-        </b-card-text>
-      </b-card>
-    </div>
-    <b-modal
-      ref="error-modal"
-      v-model="shownModal"
-      hide-footer
-      centered
-      hide-header
-    >
-      <div class="d-block text-center">
-        <h3>Error!</h3>
-        <p>{{ form.error }}</p>
-      </div>
-      <b-button class="mt-3" variant="outline-danger" block @click="hideModal"
-        >OK</b-button
-      >
-    </b-modal>
+    <v-app id="inspire">
+      <v-content>
+        <v-container class="fill-height" fluid>
+          <v-row align="center" justify="center">
+            <v-col cols="12" sm="8" md="4">
+              <v-card class="elevation-12">
+                <v-toolbar color="primary" dark flat>
+                  <v-toolbar-title>Login</v-toolbar-title>
+                  <v-spacer />
+                </v-toolbar>
+                <v-card-text>
+                  <v-form id="login_form" @submit.prevent="onSubmit">
+                    <v-text-field
+                      v-model="form.email"
+                      label="Email"
+                      name="email"
+                      prepend-icon="person"
+                      type="email"
+                    />
+
+                    <v-text-field
+                      id="password"
+                      v-model="form.password"
+                      label="Password"
+                      name="password"
+                      prepend-icon="lock"
+                      type="password"
+                    />
+                    <v-spacer />
+                    <div class="red--text text-center">
+                      {{ form.error }}
+                    </div>
+                    <v-spacer />
+                    <div class="container--button mt-3">
+                      <v-btn type="submit" color="primary">Login</v-btn>
+                    </div>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-content>
+    </v-app>
+    <v-dialog v-model="shownModal" max-width="290">
+      <v-card>
+        <v-card-title class="headline">Error!</v-card-title>
+
+        <v-card-text>
+          {{ form.error }}
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="green darken-1" text @click="shownModal = false">
+            OK
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -59,17 +70,22 @@ import 'firebase/auth'
 
 export default {
   name: 'Login',
-  data() {
-    return {
-      form: {
-        email: '',
-        password: '',
-        error: ''
-      },
-      shownModal: false
+  middleware: 'loggedInCheck',
+  props: {
+    source: {
+      type: String,
+      default: ''
     }
   },
-  middleware: 'loggedInCheck',
+  data: () => ({
+    drawer: null,
+    form: {
+      email: '',
+      password: '',
+      error: ''
+    },
+    shownModal: false
+  }),
   methods: {
     onSubmit() {
       firebase
@@ -90,39 +106,20 @@ export default {
         })
     },
     showModal() {
-      this.$refs['error-modal'].show()
-    },
-    hideModal() {
-      this.$refs['error-modal'].hide()
+      this.shownModal = true
     }
   }
 }
 </script>
 
 <style scoped>
-.full {
-  /* background: url('/maclogin.jpeg'); */
-  background: #17a2b8;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+.container.fill-height > .row {
+  max-width: unset;
 }
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
+.container--button {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
 }
-.login-container {
-  width: 400px;
-  max-width: 600px;
-  height: 400px;
-  filter: drop-shadow(2px 4px 6px rgba(46, 46, 46, 0.5));
-}
-img {
-  height: 100%;
-  object-fit: cover;
+.container--button button {
+  margin-left: auto;
 }
 </style>
