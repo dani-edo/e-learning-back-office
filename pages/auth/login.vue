@@ -29,9 +29,9 @@
                       type="password"
                     />
                     <v-spacer />
-                    <div class="red--text text-center">
+                    <v-alert v-if="form.error" dense outlined type="error">
                       {{ form.error }}
-                    </div>
+                    </v-alert>
                     <v-spacer />
                     <div class="container--button mt-3">
                       <v-btn type="submit" color="primary">Login</v-btn>
