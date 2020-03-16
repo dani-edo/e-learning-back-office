@@ -9,15 +9,8 @@
         My stellar Nuxt.js project
       </h2>
       <div class="links">
-        <a href="https://nuxtjs.org/" target="_blank" class="button--green">
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
+        <a href="/auth/login" class="button--green">
+          Login
         </a>
       </div>
     </div>
@@ -34,7 +27,11 @@ export default {
 }
 </script>
 
+// General Styling
 <style>
+body {
+  background: #2e495e;
+}
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -43,14 +40,17 @@ export default {
   align-items: center;
   text-align: center;
 }
+</style>
 
+// Scoped Styling
+<style scoped>
 .title {
   font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   display: block;
   font-weight: 300;
   font-size: 100px;
-  color: #35495e;
+  color: #60c690;
   letter-spacing: 1px;
 }
 
@@ -64,5 +64,17 @@ export default {
 
 .links {
   padding-top: 15px;
+}
+
+@media (max-width: 425px) {
+  .title {
+    font-size: 3.5rem;
+  }
+  .NuxtLogo {
+    width: 11rem;
+  }
+  .subtitle {
+    font-size: 35px;
+  }
 }
 </style>

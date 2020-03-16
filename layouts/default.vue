@@ -41,8 +41,8 @@ html {
 .button--grey {
   display: inline-block;
   border-radius: 4px;
-  border: 1px solid #35495e;
-  color: #35495e;
+  border: 1px solid #526488;
+  color: #526488;
   text-decoration: none;
   padding: 10px 30px;
   margin-left: 15px;
