@@ -1,35 +1,39 @@
 <template>
-  <div>
-    <b-modal
-      ref="general-modal"
-      v-model="shownModal"
-      hide-footer
-      centered
-      hide-header
-    >
-      <div class="d-block text-center">
-        <h3>Success!</h3>
-        <p>Check your email address</p>
-      </div>
-      <b-button class="mt-3" variant="outline-info" block @click="hideModal"
-        >OK</b-button
-      >
-    </b-modal>
-  </div>
+  <v-dialog v-model="open" max-width="290">
+    <v-card>
+      <v-card-title class="headline">{{ title }}</v-card-title>
+
+      <v-card-text>
+        {{ content }}
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <!-- <v-btn color="green darken-1" text @click="modalOpen = false">
+          OK
+        </v-btn> -->
+        <!-- Use slot instead -->
+        <slot />
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
 export default {
   name: 'Modal',
   props: {
-    shownModal: {
+    title: {
+      type: String,
+      default: ''
+    },
+    content: {
+      type: String,
+      default: ''
+    },
+    open: {
       type: Boolean,
-      default: true
-    }
-  },
-  methods: {
-    hideModal() {
-      this.$refs['general-modal'].hide()
+      default: false
     }
   }
 }

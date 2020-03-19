@@ -7,36 +7,34 @@
         <v-container class="fill-height" fluid>
           <v-row align="center" justify="center">
             <v-col class="shrink">
-              <v-card class="mx-auto" max-width="344">
-                <v-img :src="cardImage" height="200px"></v-img>
+              <v-card class="upload-container mx-auto">
+                <!-- <v-img :src="cardImage" height="200px"></v-img> -->
+                <!-- <video id="videoPlayer" class="w-100" controls>
+                  <source :src="videoLink" type="video/mp4" />
+                  Your browser does not support HTML5 video.
+                </video> -->
 
                 <!-- <v-card-title>
                   Upload something here
                 </v-card-title> -->
 
-                <v-card-subtitle>
-                  Upload something here
-                </v-card-subtitle>
-
-                <v-card-actions class="d-block">
+                <v-card-actions class="d-block position-relative pt-10">
                   <v-progress-linear
                     v-model="uploadProgress"
                     height="25"
                     reactive
+                    class="position-absolute progressbar"
                   >
                     <strong>{{ Math.ceil(uploadProgress) }}%</strong>
                   </v-progress-linear>
                   <v-file-input
-                    label="input file"
+                    label="Input video"
                     class="w-100"
                     @change="onFilePicked"
                   ></v-file-input>
-                  <v-btn color="purple" class="w-100" text>
+                  <!-- <v-btn color="purple" class="w-100" text>
                     Upload
-                  </v-btn>
-                  <v-btn color="green" class="w-100" text @click="downloadFile">
-                    Download
-                  </v-btn>
+                  </v-btn> -->
                 </v-card-actions>
               </v-card>
             </v-col>
@@ -93,7 +91,8 @@ export default {
       cardImage:
         'https://images.unsplash.com/photo-1513398886898-6ae5ff7820f3?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjkwNjAxfQ',
       uploadProgress: 0,
-      shownModal: false
+      shownModal: false,
+      videoLink: ''
     }
   },
   watch: {
@@ -107,6 +106,9 @@ export default {
   created() {
     this.$vuetify.theme.dark = true
   },
+  // mounted() {
+  //   this.downloadFile()
+  // },
   methods: {
     onFilePicked(e) {
       if (e) {
@@ -125,7 +127,7 @@ export default {
         // this.image = e
 
         // Create a storage ref
-        const storageRef = firebase.storage().ref('photos/' + filename)
+        const storageRef = firebase.storage().ref('videos/' + filename)
 
         // Upload file
         const task = storageRef.put(e)
@@ -151,14 +153,15 @@ export default {
         console.log('file undefined')
       }
     },
-    downloadFile() {
-      firebase
+    async downloadFile() {
+      await firebase
         .storage()
         .ref('supercell - Sayonara Memories.mp4')
         .getDownloadURL()
         .then((data) => {
-          console.log(data)
+          this.videoLink = data
         })
+      await document.getElementById('videoPlayer').load()
     }
   }
 }
@@ -174,5 +177,27 @@ export default {
 }
 .w-100 {
   width: 100%;
+}
+.upload-container {
+  width: 300px;
+}
+.progressbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+@media (max-width: 939px) {
+  .upload-container {
+    width: calc(100vw - 10px);
+  }
+}
+</style>
+
+<style>
+.position-relative {
+  position: relative;
+}
+.position-absolute {
+  position: absolute;
 }
 </style>

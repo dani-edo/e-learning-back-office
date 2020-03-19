@@ -44,23 +44,12 @@
         </v-container>
       </v-content>
     </v-app>
-    <v-dialog v-model="shownModal" max-width="290">
-      <v-card>
-        <v-card-title class="headline">Error!</v-card-title>
-
-        <v-card-text>
-          {{ form.error }}
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn color="green darken-1" text @click="shownModal = false">
-            OK
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <Modal :open="shownModal" title="Error!" :content="form.error">
+      <!-- Custom Button -->
+      <v-btn color="green darken-1" text @click="shownModal = false">
+        OK
+      </v-btn>
+    </Modal>
   </div>
 </template>
 
@@ -68,9 +57,14 @@
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
 
+import Modal from '~/components/Modal'
+
 export default {
   name: 'Login',
   middleware: 'loggedInCheck',
+  components: {
+    Modal
+  },
   props: {
     source: {
       type: String,
