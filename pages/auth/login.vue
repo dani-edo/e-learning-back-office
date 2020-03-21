@@ -80,6 +80,9 @@ export default {
     },
     shownModal: false
   }),
+  created() {
+    this.$vuetify.theme.dark = true
+  },
   methods: {
     onSubmit() {
       firebase

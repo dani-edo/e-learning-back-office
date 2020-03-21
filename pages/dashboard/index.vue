@@ -6,34 +6,32 @@
       <v-content>
         <v-container class="fill-height" fluid>
           <v-row align="center" justify="center">
-            <v-col class="shrink">
-              <v-card class="upload-container mx-auto">
-                <!-- <v-img :src="cardImage" height="200px"></v-img> -->
+            <v-card class="upload-container mx-auto">
+              <!-- <v-img :src="cardImage" height="200px"></v-img> -->
 
-                <!-- <v-card-title>
+              <!-- <v-card-title>
                   Upload something here
                 </v-card-title> -->
 
-                <v-card-actions class="d-block position-relative pt-10">
-                  <v-progress-linear
-                    v-model="uploadProgress"
-                    height="25"
-                    reactive
-                    class="position-absolute progressbar"
-                  >
-                    <strong>{{ Math.ceil(uploadProgress) }}%</strong>
-                  </v-progress-linear>
-                  <v-file-input
-                    label="Input video"
-                    class="w-100"
-                    @change="onFilePicked"
-                  ></v-file-input>
-                  <!-- <v-btn color="purple" class="w-100" text>
+              <v-card-actions class="d-block position-relative pt-10">
+                <v-progress-linear
+                  v-model="uploadProgress"
+                  height="25"
+                  reactive
+                  class="position-absolute progressbar"
+                >
+                  <strong>{{ Math.ceil(uploadProgress) }}%</strong>
+                </v-progress-linear>
+                <v-file-input
+                  label="Input video"
+                  class="w-100"
+                  @change="uploadFile"
+                ></v-file-input>
+                <!-- <v-btn color="purple" class="w-100" text>
                     Upload
                   </v-btn> -->
-                </v-card-actions>
-              </v-card>
-            </v-col>
+              </v-card-actions>
+            </v-card>
             <v-col>
               <v-card
                 v-for="(video, index) in videoData"
@@ -101,7 +99,8 @@ export default {
         'https://images.unsplash.com/photo-1513398886898-6ae5ff7820f3?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjkwNjAxfQ',
       uploadProgress: 0,
       shownModal: false,
-      videoData: []
+      videoData: [],
+      videoCounted: null
     }
   },
   watch: {
@@ -112,17 +111,12 @@ export default {
       }
     }
   },
-  // created() {
-  //   this.$vuetify.theme.dark = true
-  // },
   mounted() {
     this.downloadFile()
   },
   methods: {
-    onFilePicked(e) {
+    uploadFile(e) {
       if (e) {
-        console.log(e, 'run change!')
-
         // Get File
         const filename = e.name
         if (filename.lastIndexOf('.') <= 0) {
@@ -140,6 +134,29 @@ export default {
 
         // Upload file
         const task = storageRef.put(e)
+
+        // Update database data
+        const databaseRef = firebase
+          .database()
+          .ref()
+          .child('videos/')
+
+        databaseRef.once('value', (data) => {
+          this.videoCounted = data.val().length
+        })
+
+        const databaseUpdateRef = firebase
+          .database()
+          .ref()
+          .child('videos/' + this.videoCounted + '/')
+        databaseUpdateRef
+          .update({
+            location: 'videos/',
+            name: filename
+          })
+          .catch((error) => {
+            console.log('update error: ', error)
+          })
 
         // Update progressbar
         task.on(
@@ -163,16 +180,14 @@ export default {
       }
     },
     downloadFile() {
-      // Create reference
+      // Reference
       const dbRefObject = firebase
         .database()
         .ref()
         .child('videos')
 
       // Sync object changes
-      dbRefObject.once('value', (snap) => {
-        // this.videoData = snap.val()
-
+      dbRefObject.on('value', (snap) => {
         snap.forEach((snapshot) => {
           const value = snapshot.val()
 
@@ -206,6 +221,10 @@ export default {
 }
 .upload-container {
   width: 300px;
+  position: fixed;
+  right: 10px;
+  bottom: 50px;
+  z-index: 1;
 }
 .progressbar {
   position: absolute;
@@ -215,6 +234,8 @@ export default {
 @media (max-width: 939px) {
   .upload-container {
     width: calc(100vw - 10px);
+    right: unset;
+    bottom: 40px;
   }
 }
 </style>
