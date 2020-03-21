@@ -2,7 +2,7 @@ import * as firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/analytics'
 
-// Your web app's Firebase configuration
+// Firebase Config
 const firebaseConfig = {
   apiKey: 'AIzaSyBW_CxONuI66QaIW7rfQJkhHwWHfjDXGBA',
   authDomain: 'tutodiv-edo.firebaseapp.com',

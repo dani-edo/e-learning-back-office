@@ -9,10 +9,6 @@
             <v-col class="shrink">
               <v-card class="upload-container mx-auto">
                 <!-- <v-img :src="cardImage" height="200px"></v-img> -->
-                <!-- <video id="videoPlayer" class="w-100" controls>
-                  <source :src="videoLink" type="video/mp4" />
-                  Your browser does not support HTML5 video.
-                </video> -->
 
                 <!-- <v-card-title>
                   Upload something here
@@ -36,6 +32,18 @@
                     Upload
                   </v-btn> -->
                 </v-card-actions>
+              </v-card>
+            </v-col>
+            <v-col>
+              <v-card
+                v-for="(video, index) in videoData"
+                :key="index"
+                class="mb-3 px-1 py-1"
+              >
+                <video id="videoPlayer" class="w-100 videoPlayer" controls>
+                  <source :src="video" type="video/mp4" />
+                  Your browser does not support HTML5 video.
+                </video>
               </v-card>
             </v-col>
           </v-row>
@@ -69,6 +77,7 @@
 <script>
 import * as firebase from 'firebase/app'
 import 'firebase/storage'
+import 'firebase/database'
 
 import Navbar from '~/components/Navbar'
 // import Card from '~/components/Card'
@@ -92,7 +101,7 @@ export default {
         'https://images.unsplash.com/photo-1513398886898-6ae5ff7820f3?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjkwNjAxfQ',
       uploadProgress: 0,
       shownModal: false,
-      videoLink: ''
+      videoData: []
     }
   },
   watch: {
@@ -103,12 +112,12 @@ export default {
       }
     }
   },
-  created() {
-    this.$vuetify.theme.dark = true
-  },
-  // mounted() {
-  //   this.downloadFile()
+  // created() {
+  //   this.$vuetify.theme.dark = true
   // },
+  mounted() {
+    this.downloadFile()
+  },
   methods: {
     onFilePicked(e) {
       if (e) {
@@ -153,15 +162,32 @@ export default {
         console.log('file undefined')
       }
     },
-    async downloadFile() {
-      await firebase
-        .storage()
-        .ref('supercell - Sayonara Memories.mp4')
-        .getDownloadURL()
-        .then((data) => {
-          this.videoLink = data
+    downloadFile() {
+      // Create reference
+      const dbRefObject = firebase
+        .database()
+        .ref()
+        .child('videos')
+
+      // Sync object changes
+      dbRefObject.once('value', (snap) => {
+        // this.videoData = snap.val()
+
+        snap.forEach((snapshot) => {
+          const value = snapshot.val()
+
+          firebase
+            .storage()
+            .ref(value.location + value.name)
+            .getDownloadURL()
+            .then((data) => {
+              this.videoData.push(data)
+            })
+            .catch((error) => {
+              console.log('error', error)
+            })
         })
-      await document.getElementById('videoPlayer').load()
+      })
     }
   }
 }
